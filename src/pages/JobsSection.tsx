@@ -1,5 +1,7 @@
 import React, {useEffect, useRef, useCallback} from "react";
 import {useDispatch, useSelector} from "react-redux";
+import Box from "@mui/material/Box";
+
 import {fetchJobs} from "../redux/slices/jobsSlice";
 import {RootState, AppDispatch} from "../redux/store/jobsStore";
 import JobCard from "../components/JobCard";
@@ -33,7 +35,7 @@ const JobsSection: React.FC = () => {
     if (error) return <div>Error: {error}</div>;
 
     return (
-        <div>
+        <Box sx={{display: "flex", flexWrap: "wrap", justifyContent: "center"}}>
             {jobs.map((job, index) => {
                 if (jobs.length === index + 1) {
                     return (
@@ -46,7 +48,7 @@ const JobsSection: React.FC = () => {
                 }
             })}
             {isLoading && <div>Loading...</div>}
-        </div>
+        </Box>
     );
 };
 
