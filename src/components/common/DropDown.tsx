@@ -82,13 +82,11 @@ const Dropdown: React.FC<IDropDownProps> = (props) => {
                     ));
                 }}
             >
-                {values
-                    .filter((item) => !selectedvalues.includes(item))
-                    .map((item) => (
-                        <MenuItem key={item} value={item.toLowerCase()}>
-                            {item}
-                        </MenuItem>
-                    ))}
+                {values.map((item) => (
+                    <MenuItem key={item} value={item.toLowerCase()}>
+                        {item}
+                    </MenuItem>
+                ))}
             </Select>
         </FormControl>
     );

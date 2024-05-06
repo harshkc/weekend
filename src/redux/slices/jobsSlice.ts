@@ -47,7 +47,13 @@ const jobsSlice = createSlice({
         applyFilters(state, action: PayloadAction<{key: string; value: string[]}>) {
             const {key, value} = action.payload;
             state.filters[key] = value;
-            state.isFilterApplied = true;
+            const allFiltersEmpty = Object.values(state.filters).every((filter) => filter.length === 0);
+            //if all filters are empty, then no need to filter
+            state.isFilterApplied = !allFiltersEmpty;
+            if(allFiltersEmpty) {
+                state.filteredJobs = state.jobs;
+                return;
+            }
             state.filteredJobs = state.jobs.filter((job) => {
                 return Object.entries(state.filters).every(([filterKey, filterValue]) => {
                     let jobValue = job[filterKey as keyof typeof job] || "";

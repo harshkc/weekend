@@ -81,7 +81,7 @@ const JobCard = ({data}: JobCardProps) => {
                     </Typography>
                 </Grid>
                 <Typography sx={{fontSize: 16}}>About Company:</Typography>
-                <Typography sx={{fontSize: 14}}>
+                <Typography component={"div"} sx={{fontSize: 14}}>
                     {jobDetailsFromCompany.slice(0, 450)}
                     <Grid
                         sx={{
