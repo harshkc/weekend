@@ -1,21 +1,43 @@
 import {useState} from "react";
 import {FormControl, Select, MenuItem, SelectChangeEvent, OutlinedInput, Chip} from "@mui/material";
 
+import {useDispatch} from "react-redux";
+import {applyFilters} from "../../redux/slices/jobsSlice";
+
 interface IDropDownProps {
+    filterKey: string;
     placeholder: string;
     values: string[];
+    isOnlySingleSelection?: boolean;
 }
 
 const Dropdown: React.FC<IDropDownProps> = (props) => {
+    const dispatch = useDispatch();
     const [selectedvalues, setSelectedvalues] = useState<string[]>([]);
 
-    const {values, placeholder} = props;
+    const {values, placeholder, isOnlySingleSelection = false, filterKey} = props;
 
-    const handleChange = (event: SelectChangeEvent<typeof selectedvalues>) => {
+    const handleSelection = (event: SelectChangeEvent<typeof selectedvalues>) => {
         const {
             target: {value},
         } = event;
-        setSelectedvalues(typeof value === "string" ? value.split(",") : value);
+
+        let newSelectedValues = [...(value as string[])],
+            payload = {key: filterKey, value: newSelectedValues};
+
+        if (isOnlySingleSelection) {
+            newSelectedValues = [value[value.length - 1] as string];
+            payload = {key: filterKey, value: newSelectedValues};
+        }
+
+        setSelectedvalues(newSelectedValues);
+        dispatch(applyFilters(payload));
+    };
+
+    const handleDelete = (value: string) => {
+        const newValues = selectedvalues.filter((item) => item !== value);
+        setSelectedvalues(newValues);
+        dispatch(applyFilters({key: filterKey, value: newValues}));
     };
 
     return (
@@ -24,7 +46,7 @@ const Dropdown: React.FC<IDropDownProps> = (props) => {
                 sx={{minWidth: 180, height: 40}}
                 multiple
                 value={selectedvalues}
-                onChange={handleChange}
+                onChange={handleSelection}
                 input={
                     <OutlinedInput
                         sx={{
@@ -52,7 +74,7 @@ const Dropdown: React.FC<IDropDownProps> = (props) => {
                             }}
                             key={value}
                             label={value}
-                            onDelete={() => {}}
+                            onDelete={() => handleDelete(value)}
                             onMouseDown={(e) => {
                                 e.stopPropagation();
                             }}

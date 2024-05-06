@@ -17,6 +17,7 @@ export interface FilterData {
     [key: string]: {
         placeholder: string;
         values: string[];
+        isOnlySingleSelection?: boolean;
     };
 }
 
@@ -36,4 +37,5 @@ export interface JobsState {
     filters: {
         [key: string]: string[];
     }
+    isFilterApplied: boolean;
 }

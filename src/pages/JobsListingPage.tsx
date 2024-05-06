@@ -1,19 +1,21 @@
 import {useEffect, useRef, useCallback} from "react";
 import {useDispatch, useSelector} from "react-redux";
 
+import {CircularProgress, Box, Typography} from "@mui/material";
 import JobsSection from "../components/jobs/JobsSection";
 import Dropdown from "../components/common/DropDown";
 
 import {filterData} from "../helpers/filterCategories";
-import {FilterData} from "../types/types";
 
-import {fetchJobs} from "../redux/slices/jobsSlice";
 import {RootState, AppDispatch} from "../redux/store/jobsStore";
+import {fetchJobs} from "../redux/slices/jobsSlice";
 
 const JobsListingPage = () => {
-    const filterKeys = Object.keys(filterData) as (keyof FilterData)[];
+    const filterKeys = Object.keys(filterData) as string[];
     const dispatch = useDispatch<AppDispatch>();
-    const {jobs, isLoading, hasMore, error} = useSelector((state: RootState) => state.jobs);
+    const {jobs, isLoading, hasMore, error, filteredJobs, isFilterApplied} = useSelector(
+        (state: RootState) => state.jobs
+    );
     const observer = useRef<IntersectionObserver | null>(null);
 
     const lastJobElementRef = useCallback(
@@ -39,18 +41,52 @@ const JobsListingPage = () => {
 
     if (error) return <div>Error: {error}</div>;
     return (
-        <div>
-            {filterKeys.map((key) => {
-                return (
-                    <Dropdown
-                        key={key}
-                        placeholder={filterData[key].placeholder}
-                        values={filterData[key].values}
-                    />
-                );
-            })}
-            <JobsSection lastJobElementRef={lastJobElementRef} jobsData={jobs} />
-        </div>
+        <>
+            <Typography sx={{textAlign: "center", margin: "2rem 0", fontSize: "2rem", fontWeight: "600"}}>
+                Weekend
+            </Typography>
+            <Box
+                sx={{
+                    display: "flex",
+                    justifyContent: "center",
+                    gap: "1rem",
+                    flexWrap: "wrap",
+                    margin: "1rem auto",
+                    maxWidth: "80%",
+                }}
+            >
+                {filterKeys.map((filter: string) => {
+                    const {placeholder, values, isOnlySingleSelection = false} = filterData[filter];
+                    return (
+                        <Dropdown
+                            key={filter}
+                            filterKey={filter}
+                            placeholder={placeholder}
+                            values={values}
+                            isOnlySingleSelection={isOnlySingleSelection}
+                        />
+                    );
+                })}
+            </Box>
+
+            <JobsSection
+                lastJobElementRef={isFilterApplied ? null : lastJobElementRef}
+                jobsData={isFilterApplied ? filteredJobs : jobs}
+                isLoading={isLoading}
+            />
+            {error && <div>Error: {error}</div>}
+            {isLoading && (
+                <CircularProgress
+                    sx={{
+                        margin: "5rem auto",
+                        color: "rgb(85, 239, 196)",
+                        display: "flex",
+                        justifyContent: "center",
+                        alignItems: "center",
+                    }}
+                />
+            )}
+        </>
     );
 };
 

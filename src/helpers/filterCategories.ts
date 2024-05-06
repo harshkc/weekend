@@ -6,12 +6,9 @@ export const filterData : FilterData  = {
         values: ["Frontend", "Backend", "FullStack", "Ios", "Android", "React Native", "Flutter"],
     },
     minExp: {
-        placeholder: "Select Experience Level",
+        placeholder: "Min Experience Level",
         values: ["1", "2", "3", "4", "5", "6", "7", "8", "9"],
-    },
-    teamSize: {
-        placeholder: "Select No of Employees",
-        values: ["1-10", "11-20", "21-50", "51-100", "101-200", "200+"],
+        isOnlySingleSelection: true,
     },
     location: {
         placeholder: "Select Location",
@@ -25,10 +22,12 @@ export const filterData : FilterData  = {
             "Kolkata",
             "Gurgaon",
             "Noida",
+            "remote"
         ],
     },
     minJdSalary: {
         placeholder: "Min Base Pay",
         values: ["10", "20", "30", "40", "50", "60", "70", "80", "90+"],
+        isOnlySingleSelection: true,
     },
 };
