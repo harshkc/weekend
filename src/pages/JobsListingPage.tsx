@@ -1,12 +1,17 @@
-import React, {useEffect, useRef, useCallback} from "react";
+import {useEffect, useRef, useCallback} from "react";
 import {useDispatch, useSelector} from "react-redux";
-import Box from "@mui/material/Box";
+
+import JobsSection from "../components/jobs/JobsSection";
+import Dropdown from "../components/common/DropDown";
+
+import {filterData} from "../helpers/filterCategories";
+import {FilterData} from "../types/types";
 
 import {fetchJobs} from "../redux/slices/jobsSlice";
 import {RootState, AppDispatch} from "../redux/store/jobsStore";
-import JobCard from "../components/JobCard";
 
-const JobsSection: React.FC = () => {
+const JobsListingPage = () => {
+    const filterKeys = Object.keys(filterData) as (keyof FilterData)[];
     const dispatch = useDispatch<AppDispatch>();
     const {jobs, isLoading, hasMore, error} = useSelector((state: RootState) => state.jobs);
     const observer = useRef<IntersectionObserver | null>(null);
@@ -33,23 +38,20 @@ const JobsSection: React.FC = () => {
     }, [dispatch]);
 
     if (error) return <div>Error: {error}</div>;
-
     return (
-        <Box sx={{display: "flex", flexWrap: "wrap", justifyContent: "center"}}>
-            {jobs.map((job, index) => {
-                if (jobs.length === index + 1) {
-                    return (
-                        <div ref={lastJobElementRef} key={job.jdUid}>
-                            <JobCard data={job} />
-                        </div>
-                    );
-                } else {
-                    return <JobCard key={job.jdUid} data={job} />;
-                }
+        <div>
+            {filterKeys.map((key) => {
+                return (
+                    <Dropdown
+                        key={key}
+                        placeholder={filterData[key].placeholder}
+                        values={filterData[key].values}
+                    />
+                );
             })}
-            {isLoading && <div>Loading...</div>}
-        </Box>
+            <JobsSection lastJobElementRef={lastJobElementRef} jobsData={jobs} />
+        </div>
     );
 };
 
-export default JobsSection;
+export default JobsListingPage;

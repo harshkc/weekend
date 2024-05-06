@@ -13,6 +13,13 @@ export interface JobData {
     logoUrl: string;
 }
 
+export interface FilterData {
+    [key: string]: {
+        placeholder: string;
+        values: string[];
+    };
+}
+
 export interface ApiResponse {
     jdList: JobData[];
     totalCount: number;
@@ -25,4 +32,8 @@ export interface JobsState {
     offset: number;
     limit: number;
     error: string | null;
+    filteredJobs: JobData[];
+    filters: {
+        [key: string]: string[];
+    }
 }

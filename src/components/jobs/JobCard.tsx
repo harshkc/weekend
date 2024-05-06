@@ -1,5 +1,5 @@
 import {Card, CardContent, Typography, Button, Chip, Grid, Avatar} from "@mui/material";
-import {JobData} from "../types/types";
+import {JobData} from "../../types/types";
 
 interface JobCardProps {
     data: JobData;
