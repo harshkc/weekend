@@ -1,29 +1,30 @@
 import {Card, CardContent, Typography, Button, Chip, Grid, Avatar} from "@mui/material";
-
-interface JobData {
-    id: string;
-    companyLogo: string;
-    companyName: string;
-    role: string;
-    location: string;
-    minExp: number;
-    minSalary: number;
-    maxSalary: number;
-    description: string;
-}
+import {JobData} from "../types/types";
 
 interface JobCardProps {
     data: JobData;
 }
 
 const capitalize = (str: string) => {
-    if (str === "") return "";
+    if (!str) return "";
     const words = str.split(" ");
     const capitalizedWords = words.map((word) => word[0].toUpperCase() + word.slice(1));
     return capitalizedWords.join(" ");
 };
 
 const JobCard = ({data}: JobCardProps) => {
+    const {
+        jdLink = "",
+        jobDetailsFromCompany = "",
+        maxJdSalary = 0,
+        minJdSalary = 0,
+        salaryCurrencyCode = "",
+        location = "",
+        minExp = 0,
+        jobRole = "",
+        companyName = "",
+        logoUrl = "",
+    } = data;
     return (
         <Card
             sx={{
@@ -55,7 +56,7 @@ const JobCard = ({data}: JobCardProps) => {
                 />
                 <Grid sx={{display: "flex", alignItems: "center"}}>
                     <Avatar
-                        src={data.companyLogo}
+                        src={logoUrl}
                         alt='logo'
                         sx={{width: 60, height: 60, borderRadius: 0, marginRight: 2}}
                     />
@@ -63,24 +64,25 @@ const JobCard = ({data}: JobCardProps) => {
                         <Typography
                             sx={{fontSize: 14, color: "#8b8b8b", fontWeight: 600, marginBottom: "3px"}}
                         >
-                            {capitalize(data.companyName)}
+                            {capitalize(companyName)}
                         </Typography>
                         <Typography sx={{fontSize: 14, lineHeight: 1.5, color: "#000000"}}>
-                            {capitalize(data.role)}
+                            {capitalize(jobRole)}
                         </Typography>
-                        <Typography sx={{fontSize: 12}}>{capitalize(data.location)}</Typography>
+                        <Typography sx={{fontSize: 12}}>{capitalize(location)}</Typography>
                     </Grid>
                 </Grid>
                 <Grid sx={{mt: 1, display: "flex"}}>
                     <Typography
                         sx={{fontSize: 14, color: "rgb(77, 89, 106)", lineHeight: 1.43, margin: "8px 0"}}
                     >
-                        Estimated Salary: ₹{data.minSalary} - {data.maxSalary} LPA ✅
+                        Estimated Salary: {salaryCurrencyCode} {minJdSalary && `${minJdSalary} -`}{" "}
+                        {maxJdSalary} LPA ✅
                     </Typography>
                 </Grid>
                 <Typography sx={{fontSize: 16}}>About Company:</Typography>
                 <Typography sx={{fontSize: 14}}>
-                    {data.description.slice(0, 450)}
+                    {jobDetailsFromCompany.slice(0, 450)}
                     <Grid
                         sx={{
                             padding: "28px 20px 0 0",
@@ -109,7 +111,7 @@ const JobCard = ({data}: JobCardProps) => {
                 >
                     Minimum Experience
                 </Typography>
-                <Typography sx={{fontSize: 14}}>{data.minExp} years</Typography>
+                <Typography sx={{fontSize: 14}}>{minExp} years</Typography>
 
                 <Button
                     variant='contained'
@@ -130,6 +132,9 @@ const JobCard = ({data}: JobCardProps) => {
                         display: "flex",
                         alignItems: "center",
                         justifyContent: "center",
+                    }}
+                    onClick={() => {
+                        window.open(jdLink, "_blank");
                     }}
                 >
                     ⚡ Easy Apply
