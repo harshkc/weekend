@@ -1,17 +1,14 @@
 import {useEffect, useRef, useCallback} from "react";
 import {useDispatch, useSelector} from "react-redux";
 
-import {CircularProgress, Box, Typography} from "@mui/material";
+import {CircularProgress, Typography} from "@mui/material";
 import JobsSection from "../components/jobs/JobsSection";
-import Dropdown from "../components/common/DropDown";
-
-import {filterData} from "../helpers/filterCategories";
+import FilterSection from "../components/filters/FilterSection";
 
 import {RootState, AppDispatch} from "../redux/store/jobsStore";
 import {fetchJobs} from "../redux/slices/jobsSlice";
 
 const JobsListingPage = () => {
-    const filterKeys = Object.keys(filterData) as string[];
     const dispatch = useDispatch<AppDispatch>();
     const {jobs, isLoading, hasMore, error, filteredJobs, isFilterApplied} = useSelector(
         (state: RootState) => state.jobs
@@ -39,36 +36,12 @@ const JobsListingPage = () => {
         dispatch(fetchJobs());
     }, [dispatch]);
 
-    if (error) return <div>Error: {error}</div>;
     return (
         <>
             <Typography sx={{textAlign: "center", margin: "2rem 0", fontSize: "2rem", fontWeight: "600"}}>
                 Weekend
             </Typography>
-            <Box
-                sx={{
-                    display: "flex",
-                    justifyContent: "center",
-                    gap: "1rem",
-                    flexWrap: "wrap",
-                    margin: "1rem auto",
-                    maxWidth: "80%",
-                }}
-            >
-                {filterKeys.map((filter: string) => {
-                    const {placeholder, values, isOnlySingleSelection = false} = filterData[filter];
-                    return (
-                        <Dropdown
-                            key={filter}
-                            filterKey={filter}
-                            placeholder={placeholder}
-                            values={values}
-                            isOnlySingleSelection={isOnlySingleSelection}
-                        />
-                    );
-                })}
-            </Box>
-
+            <FilterSection />
             <JobsSection
                 lastJobElementRef={isFilterApplied ? null : lastJobElementRef}
                 jobsData={isFilterApplied ? filteredJobs : jobs}
