@@ -111,7 +111,7 @@ const JobCard = ({data}: JobCardProps) => {
                 >
                     Minimum Experience
                 </Typography>
-                <Typography sx={{fontSize: 14}}>{minExp} years</Typography>
+                <Typography sx={{fontSize: 14}}>{minExp ? `${minExp} years` : "NA"}</Typography>
 
                 <Button
                     variant='contained'
