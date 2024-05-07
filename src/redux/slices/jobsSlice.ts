@@ -21,13 +21,21 @@ const initialState: JobsState = {
 };
 
 export const fetchJobs = createAsyncThunk<ApiResponse, void>("jobs/fetchJobs", async (_, {getState}) => {
-    const state: JobsState = getState() as JobsState;
+    const state = getState() as {jobs: JobsState};
+
+    const {limit, offset} = state.jobs;
+
+    // Ensure that limit and offset are well-defined
+    if (typeof limit === "undefined" || typeof offset === "undefined") {
+        throw new Error("Missing limit or offset in state");
+    }
+
     const myHeaders = new Headers();
     myHeaders.append("Content-Type", "application/json");
 
     const body = JSON.stringify({
-        limit: state.limit,
-        offset: state.offset,
+        limit,
+        offset,
     });
 
     const requestOptions = {
@@ -37,7 +45,13 @@ export const fetchJobs = createAsyncThunk<ApiResponse, void>("jobs/fetchJobs", a
     };
 
     const response = await fetch("https://api.weekday.technology/adhoc/getSampleJdJSON", requestOptions);
-    return response.json();
+
+    if (!response.ok) {
+        throw new Error("Network response was not ok");
+    }
+
+    const data = await response.json();
+    return data;
 });
 
 const jobsSlice = createSlice({
@@ -50,7 +64,7 @@ const jobsSlice = createSlice({
             const allFiltersEmpty = Object.values(state.filters).every((filter) => filter.length === 0);
             //if all filters are empty, then no need to filter
             state.isFilterApplied = !allFiltersEmpty;
-            if(allFiltersEmpty) {
+            if (allFiltersEmpty) {
                 state.filteredJobs = state.jobs;
                 return;
             }
@@ -61,17 +75,20 @@ const jobsSlice = createSlice({
                     if (filterValue.length === 0) {
                         return true; // If the filter value is an empty array, it means no filtering for that key
                     }
-                    if (filterKey === "minExp" || filterKey === "minJdSalary") {
-                        //the value can be 90+, handle this case
-                        if(filterValue[0].indexOf("+") !== -1) {
+                    if (filterKey === "minJdSalary") {
+                        //the value can be x+ kind of range like 90+ handle this case
+                        if (filterValue[0].indexOf("+") !== -1) {
                             return +jobValue >= +filterValue[0].slice(0, -1);
                         }
                         return +jobValue >= +filterValue[0];
                     }
+                    else if(filterKey === "minExp") {
+                        return +jobValue <= +filterValue[0];
+                    }
 
                     return filterValue.some((filter) =>
                         jobValue.toLowerCase().includes(filter.toLowerCase())
-                    ); 
+                    );
                 });
             });
         },
